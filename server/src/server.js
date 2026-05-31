@@ -17,7 +17,7 @@ import jwt from "jsonwebtoken";
 // utils  imports
 import { notFoundHandler, errorHandler } from "./middlewares/errorHandler.js";
 import { loggerMiddleware } from "./middlewares/loggerMiddleware.js";
-import { dbConnection, db } from "./config/dbConnection.js";
+import { dbConnection, db, disconnectDB } from "./config/dbConnection.js";
 import { logger } from "./services/logger.js";
 
 // Routes
@@ -237,4 +237,51 @@ app.use(errorHandler);
 // Start server
 server.listen(PORT, () => {
   console.info(`Server running on port ${PORT}`);
+});
+
+
+// Graceful shutdown
+process.on("unhandledRejection", async (err) => {
+  console.error("Unhandled Rejection:", err);
+
+  try {
+    if (server) {
+      server.close();
+    }
+
+    await disconnectDB();
+  } catch (shutdownErr) {
+    console.error("Shutdown Error:", shutdownErr);
+  }
+
+  process.exit(1);
+});
+
+process.on("uncaughtException", async (err) => {
+  console.error("Uncaught Exception:", err);
+
+  try {
+    if (server) {
+      server.close();
+    }
+
+    await disconnectDB();
+  } catch (shutdownErr) {
+    console.error("Shutdown Error:", shutdownErr);
+  }
+
+  process.exit(1);
+});
+
+process.on("SIGTERM", async () => {
+  console.log("SIGTERM received");
+
+  try {
+    server.close();
+    await disconnectDB();
+  } catch (err) {
+    console.error(err);
+  }
+
+  process.exit(0);
 });

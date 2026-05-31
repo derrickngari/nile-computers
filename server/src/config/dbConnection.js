@@ -68,7 +68,17 @@ const dbConnection = async () => {
   });
 };
 
+const disconnectDB = async () => {
+  try {
+    await pool.end();
+    console.info("MySQL connection pool closed");
+  } catch (error) {
+    console.error("Error closing MySQL pool:", error.message);
+  }
+};
+
 export {
   db,
   dbConnection,
+  disconnectDB,
 };

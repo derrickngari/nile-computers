@@ -22,8 +22,10 @@ import { logger } from "./services/logger.js";
 
 // Routes
 import authRoutes from "./routes/authRoutes.js";
-// import locationRoutes from "./routes/locationRoutes.js";
-// import vehicleRoutes from "./routes/vehicleRoutes.js";
+import brancheRoutes from "./routes/branchRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import roleRoutes from "./routes/roleRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 // Set socket
 import { setIO } from "./config/socket.js";
@@ -42,7 +44,7 @@ const authLimiter = rateLimit({
 
 // App setup
 const app = express();
-app.set("trust proxy", 1);
+app.set("trust proxy", true);
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -185,7 +187,7 @@ const corsOptions = {
 // Middlewares
 app.use(
   session({
-    name: "skylink.sid",
+    name: "nile.sid",
     secret: process.env.SESSION_SECRET || "dev-secret",
     resave: false,
     saveUninitialized: false,
@@ -226,9 +228,10 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRoutes);
-// app.use("/api/v1/locations", locationRoutes);
-// app.use("/api/v1/vehicles", vehicleRoutes);
-
+app.use("/api/v1/branches", brancheRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/roles", roleRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 
 // Error handling
 app.use(notFoundHandler);

@@ -608,3 +608,25 @@ CREATE INDEX idx_sla_targets_process_name ON sla_targets(process_name);
 ALTER TABLE users
 ADD COLUMN vehicle_id BIGINT,
 ADD FOREIGN KEY (vehicle_id) REFERENCES vehicles(id);
+
+ALTER TABLE notifications 
+ADD COLUMN IF NOT EXISTS type ENUM('order', 'inventory', 'system', 'user', 'security') DEFAULT 'system',
+ADD COLUMN IF NOT EXISTS entity_type VARCHAR(50),
+ADD COLUMN IF NOT EXISTS entity_id BIGINT,
+ADD COLUMN IF NOT EXISTS link TEXT,
+ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP NULL,
+ADD INDEX idx_notifications_user_read (user_id, is_read),
+ADD INDEX idx_notifications_created (created_at DESC);
+
+ALTER TABLE notifications
+MODIFY COLUMN type ENUM(
+        'order',
+        'inventory',
+        'system',
+        'delivery',
+        'customer',
+        'purchase_order',
+        'stock_transfer',
+        'payment',
+        'security'
+    ) DEFAULT 'system';

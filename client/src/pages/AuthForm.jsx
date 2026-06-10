@@ -71,11 +71,11 @@ const AuthForm = () => {
       <div className="card w-full mx-auto max-w-md bg-base-100 shadow-2xl border border-base-300">
         <div className="card-body mx-auto w-full max-w-sm">
           {/* Logo */}
-          <div className="flex justify-center mb-2">
+          {/* <div className="flex justify-center mb-2">
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
               <ShieldCheck className="text-primary" size={34} />
             </div>
-          </div>
+          </div> */}
 
           {/* Header */}
           <div className="text-center">

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -30,6 +31,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useAuth } from "../../contexts/authContext";
+import { api } from "../../services/api";
 import { useNotifications } from "../../contexts/notificationsContext";
 import Sidebar from "../ui/Sidebar";
 import NotificationsModal from "../ui/NotificationsModal";
@@ -45,7 +47,8 @@ export default function AdminLayout() {
   const { unreadCount, notifications, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
   const [showModal, setShowModal] = useState(false);
 
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   // Toggle handler for the navbar button
   const handleNavbarToggle = () => {
@@ -70,6 +73,17 @@ export default function AdminLayout() {
     setNotifications(prev =>
       prev.map(n => ({ ...n, is_read: 1 }))
     );
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await api.post("/auth/logout");
+      toast.success(res.data.message);
+      logout();
+      navigate("/auth");
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+    }
   };
 
   useEffect(() => {
@@ -168,7 +182,7 @@ export default function AdminLayout() {
                   <a className="hover:bg-base-200 rounded-lg">Settings</a>
                 </li>
                 <li className="border-t border-base-300 mt-1 pt-1">
-                  <a className="text-error hover:bg-error/10 rounded-lg">
+                  <a onClick={() => handleLogout()} className="text-error hover:bg-error/10 rounded-lg">
                     Logout
                   </a>
                 </li>
